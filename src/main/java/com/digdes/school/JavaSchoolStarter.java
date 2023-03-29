@@ -16,7 +16,7 @@ public class JavaSchoolStarter {
     public List<Map<String,Object>> execute(String request) throws Exception {
         Lexer lexer = new Lexer();
         lexer.analys(request);
-//        Parser parser = new Parser(lexer.getTokens());
+        Parser parser = new Parser(lexer.getTokens());
 //        StatementNode root = parser.getRoot();
 //        Translator translator = new Translator(root, table);
         return new ArrayList<>();
