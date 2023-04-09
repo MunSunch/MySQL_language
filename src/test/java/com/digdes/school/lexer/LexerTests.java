@@ -87,7 +87,7 @@ public class LexerTests {
         expected.add(new Token(Type.LOGICAL_OPERATOR, "AND", 38));
         expected.add(new Token(Type.COLUMN, "age", 42));
         expected.add(new Token(Type.OPERATOR, ">", 45));
-        expected.add(new Token(Type.INTEGER, "12", 46));
+        expected.add(new Token(Type.LONG, "12", 46));
         expected.add(new Token(Type.LOGICAL_OPERATOR, "OR", 49));
         expected.add(new Token(Type.COLUMN, "isChild", 52));
         expected.add(new Token(Type.OPERATOR, "=", 59));
@@ -112,11 +112,11 @@ public class LexerTests {
         expected.add(new Token(Type.COMMA, ",", 35));
         expected.add(new Token(Type.COLUMN, "id", 37));
         expected.add(new Token(Type.OPERATOR, "=", 39));
-        expected.add(new Token(Type.INTEGER, "3", 40));
+        expected.add(new Token(Type.LONG, "3", 40));
         expected.add(new Token(Type.COMMA, ",", 41));
         expected.add(new Token(Type.COLUMN, "age", 43));
         expected.add(new Token(Type.OPERATOR, "=", 46));
-        expected.add(new Token(Type.INTEGER, "40", 47));
+        expected.add(new Token(Type.LONG, "40", 47));
         expected.add(new Token(Type.COMMA, ",", 49));
         expected.add(new Token(Type.COLUMN, "active", 51));
         expected.add(new Token(Type.OPERATOR, "=", 57));
@@ -145,7 +145,7 @@ public class LexerTests {
         expected.add(new Token(Type.KEYWORD, "WHERE", 38));
         expected.add(new Token(Type.COLUMN, "id", 44));
         expected.add(new Token(Type.OPERATOR, "=", 46));
-        expected.add(new Token(Type.INTEGER, "3", 47));
+        expected.add(new Token(Type.LONG, "3", 47));
 
         lexer.analys(command);
         var actual = lexer.getTokens();
@@ -183,7 +183,7 @@ public class LexerTests {
         expected.add(new Token(Type.KEYWORD, "WHERE", 7));
         expected.add(new Token(Type.COLUMN, "id", 13));
         expected.add(new Token(Type.OPERATOR, "=", 15));
-        expected.add(new Token(Type.INTEGER, "3", 16));
+        expected.add(new Token(Type.LONG, "3", 16));
 
         lexer.analys(command);
         var actual = lexer.getTokens();

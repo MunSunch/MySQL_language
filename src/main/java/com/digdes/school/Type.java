@@ -8,7 +8,7 @@ public enum Type {
     OPERATOR("^=|^!=|^<|^>|^<=|^>=|^like|^ilike"),
     LOGICAL_OPERATOR("^AND|^OR"),
     DOUBLE("\\d+\\.\\d+"),
-    INTEGER("\\d+"),
+    LONG("\\d+"),
     BOOLEAN("^true|^false"),
     STRING("'[a-zA-Zа-яА-Я0-9]+'"),
     COLUMN("\\w+");

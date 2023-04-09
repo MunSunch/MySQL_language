@@ -13,7 +13,6 @@ public class StatementNode extends Node {
     public void addNode(Node node) {
         nodes.add(node);
     }
-
     public List<Node> getNodes() {
         return nodes;
     }
@@ -24,7 +23,6 @@ public class StatementNode extends Node {
         if (o == null || getClass() != o.getClass()) return false;
 
         StatementNode that = (StatementNode) o;
-
-        return nodes != null ? nodes.equals(that.nodes) : that.nodes == null;
+        return nodes.equals(that.getNodes());
     }
 }

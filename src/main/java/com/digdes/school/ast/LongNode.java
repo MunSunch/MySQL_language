@@ -2,8 +2,8 @@ package com.digdes.school.ast;
 
 import com.digdes.school.Token;
 
-public class IntegerNode extends DataNode {
-    public IntegerNode(Token token) {
+public class LongNode extends DataNode {
+    public LongNode(Token token) {
         super(token);
     }
 
@@ -12,7 +12,7 @@ public class IntegerNode extends DataNode {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        IntegerNode column = (IntegerNode) o;
+        LongNode column = (LongNode) o;
 
         return getToken().equals(column.getToken());
     }

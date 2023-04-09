@@ -6,16 +6,21 @@ import java.util.*;
 public class Parser {
     private List<Token> tokens;
     private int position;
+    private Map<Type, Integer> priorityOperations;
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
         this.position = 0;
+        this.priorityOperations = new HashMap<>();
+        priorityOperations.put(Type.OPERATOR, 1);
+        priorityOperations.put(Type.LOGICAL_OPERATOR, 2);
     }
 
     public Stack<Node> parse() throws Exception{
         Stack<Node> statementNodes = new Stack<>();
+        Token currentToken;
         if(position < tokens.size()) {
-            var currentToken = require(Type.KEYWORD);
+            currentToken = require(Type.KEYWORD);
             switch ((String)currentToken.getValue()) {
                 case "SELECT":
                     SelectNode select = parseSelect();
@@ -24,78 +29,35 @@ public class Parser {
                 case "INSERT":
                     InsertNode insert = parseInsert();
                     statementNodes.push(insert);
-                    break;
+                    return statementNodes;
                 case "DELETE":
-
-                default:
+                    DeleteNode delete = parseDelete();
+                    statementNodes.push(delete);
+                    break;
+                case "UPDATE":
                     UpdateNode update = parseUpdate();
                     statementNodes.push(update);
+                    break;
+                default:
+                    throw new Exception("Syntax Error!");
+            }
+            if(position == tokens.size()) {
+                return statementNodes;
             }
             currentToken = match(Type.KEYWORD);
             if("WHERE".equals(currentToken.getValue())) {
+                position--;
                 WhereNode where = parseWhere();
                 statementNodes.push(where);
+            } else {
+                throw new Exception("Syntax Error!");
             }
         }
         return statementNodes;
     }
 
-    private WhereNode parseWhere() throws Exception {
-        while(true) {
-            BinaryOperatorNode left = parseBinaryOperation();
-            var cur = match(Type.LOGICAL_OPERATOR);
-            if (cur == null) {
-                break;
-            }
-            BinaryOperatorNode right = parseBinaryOperation();
-            BinaryOperatorNode binary = new BinaryOperatorNode(left, cur, right);
-
-        }
-    }
-
-    private BinaryOperatorNode parseBinaryOperation() throws Exception{
-        var left = require(Type.COLUMN);
-        var operator = require(Type.OPERATOR);
-        var right = require(Type.STRING, Type.DOUBLE, Type.INTEGER, Type.BOOLEAN);
-        BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode();
-        binaryOperatorNode.setLeft(new ColumnNode(left));
-        binaryOperatorNode.setOperator(operator);
-        switch (right.getType()) {
-            case INTEGER -> binaryOperatorNode.setRight(new IntegerNode(right));
-            case DOUBLE -> binaryOperatorNode.setRight(new DoubleNode(right));
-            case STRING -> binaryOperatorNode.setRight(new StringNode(right));
-            default -> binaryOperatorNode.setRight(new BooleanNode(right));
-        }
-        return binaryOperatorNode;
-    }
-
-    private UpdateNode parseUpdate() throws Exception {
-        UpdateNode updateNode = new UpdateNode();
-        require(Type.KEYWORD);
-        while(true) {
-            BinaryOperatorNode binaryOperatorNode = parseAssignOperation();
-            updateNode.addNode(binaryOperatorNode);
-            if(match(Type.COMMA) == null) {
-                break;
-            }
-        }
-        position--;
-        return updateNode;
-    }
-
-    private InsertNode parseInsert() throws Exception{
-        InsertNode insertNode = new InsertNode();
-        require(Type.KEYWORD);
-        while(true)
-        {
-            BinaryOperatorNode binaryOperatorNode = parseAssignOperation();
-            insertNode.addNode(binaryOperatorNode);
-            if(match(Type.COMMA) == null) {
-                break;
-            }
-        }
-        position--;
-        return insertNode;
+    private DeleteNode parseDelete() {
+        return new DeleteNode();
     }
 
     private SelectNode parseSelect() throws Exception {
@@ -118,12 +80,100 @@ public class Parser {
         return selectNode;
     }
 
+    private UpdateNode parseUpdate() throws Exception {
+        UpdateNode updateNode = new UpdateNode();
+        var currentToken = require(Type.KEYWORD);
+        if(!"VALUES".equals(currentToken.getValue())) {
+            throw new Exception("Syntax Error!");
+        }
+        while(true) {
+            BinaryOperatorNode binaryOperatorNode = parseAssignOperation();
+            updateNode.addNode(binaryOperatorNode);
+            if(match(Type.COMMA) == null) {
+                break;
+            }
+        }
+        position--;
+        return updateNode;
+    }
+
+    private InsertNode parseInsert() throws Exception{
+        InsertNode insertNode = new InsertNode();
+        var currentToken = require(Type.KEYWORD);
+        if(!"VALUES".equals(currentToken.getValue())) {
+            throw new Exception("Syntax Error!");
+        }
+        while(true)
+        {
+            BinaryOperatorNode binaryOperatorNode = parseAssignOperation();
+            insertNode.addNode(binaryOperatorNode);
+            if(match(Type.COMMA) == null) {
+                break;
+            }
+        }
+        position--;
+        return insertNode;
+    }
+
     private BinaryOperatorNode parseAssignOperation() throws Exception {
         var binary = parseBinaryOperation();
         if(!"=".equals(binary.getOperator().getValue())){
-            throw new Exception(String.format("На позиции %d ожидается '='"));
+            throw new Exception("Syntax Error!");
         }
         return binary;
+    }
+
+    private BinaryOperatorNode parseBinaryOperation() throws Exception{
+        var left = require(Type.COLUMN);
+        var operator = require(Type.OPERATOR);
+        var right = require(Type.STRING, Type.DOUBLE, Type.LONG, Type.BOOLEAN);
+        BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode();
+        binaryOperatorNode.setLeft(new ColumnNode(left));
+        binaryOperatorNode.setOperator(operator);
+        switch (right.getType()) {
+            case LONG -> binaryOperatorNode.setRight(new LongNode(right));
+            case DOUBLE -> binaryOperatorNode.setRight(new DoubleNode(right));
+            case STRING -> binaryOperatorNode.setRight(new StringNode(right));
+            default -> binaryOperatorNode.setRight(new BooleanNode(right));
+        }
+        return binaryOperatorNode;
+    }
+
+    private WhereNode parseWhere() throws Exception {
+        Stack<BinaryOperatorNode> temp = new Stack<>();
+        Token currentToken = require(Type.KEYWORD);
+        if(!"WHERE".equals(currentToken.getValue())) {
+            throw new Exception("Syntax Error!");
+        }
+        while(position < tokens.size()) {
+            currentToken = require(Type.COLUMN, Type.LOGICAL_OPERATOR);
+            BinaryOperatorNode binaryOperatorNode;
+            if(currentToken.getType() == Type.COLUMN) {
+                position--;
+                binaryOperatorNode = parseBinaryOperation();
+            } else if(currentToken.getType() == Type.LOGICAL_OPERATOR) {
+                binaryOperatorNode = new BinaryOperatorNode();
+                binaryOperatorNode.setOperator(currentToken);
+            } else {
+                throw new Exception("Syntax error!");
+            }
+
+            if(temp.isEmpty()) {
+                temp.push(binaryOperatorNode);
+                continue;
+            }
+            if(priorityOperations.get(temp.peek().getOperator().getType())
+                    > priorityOperations.get(binaryOperatorNode.getOperator().getType()) )
+            {
+                BinaryOperatorNode logicalBinaryOperator = temp.pop();
+                logicalBinaryOperator.setLeft(temp.pop());
+                logicalBinaryOperator.setRight(binaryOperatorNode);
+                temp.push(logicalBinaryOperator);
+            } else {
+                temp.push(binaryOperatorNode);
+            }
+        }
+        return new WhereNode(temp.pop());
     }
 
     private Token match(Type ...expectedType) {

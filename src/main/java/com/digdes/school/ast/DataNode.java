@@ -2,8 +2,6 @@ package com.digdes.school.ast;
 
 import com.digdes.school.Token;
 
-import java.util.Objects;
-
 public class DataNode extends Node {
     private Token token;
 
@@ -22,6 +20,6 @@ public class DataNode extends Node {
 
         DataNode dataNode = (DataNode) o;
 
-        return Objects.equals(token, dataNode.token);
+        return token.equals(dataNode.getToken());
     }
 }

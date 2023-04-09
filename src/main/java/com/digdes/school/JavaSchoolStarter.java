@@ -13,12 +13,14 @@ public class JavaSchoolStarter {
 
     public JavaSchoolStarter() {}
 
-    public List<Map<String,Object>> execute(String request) throws Exception {
+    public static List<Map<String, Object>> execute(List<Map<String, Object>> table,
+                                                     String command) throws Exception
+    {
         Lexer lexer = new Lexer();
-        lexer.analys(request);
+        lexer.analys(command);
         Parser parser = new Parser(lexer.getTokens());
-//        StatementNode root = parser.getRoot();
-//        Translator translator = new Translator(root, table);
-        return new ArrayList<>();
+        var stack = parser.parse();
+        Translator translator = new Translator(stack, table);
+        return translator.translate();
     }
 }

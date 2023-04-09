@@ -3,18 +3,16 @@ package com.digdes.school.ast;
 import com.digdes.school.Token;
 
 public class BinaryOperatorNode extends Node {
-    Node left;
-    Token operator;
-    Node right;
+    private Node left;
+    private Token operator;
+    private Node right;
 
     public BinaryOperatorNode(Node left, Token operator, Node right) {
         this.left = left;
         this.operator = operator;
         this.right = right;
     }
-
-    public BinaryOperatorNode() {
-    }
+    public BinaryOperatorNode() {}
 
     public void setLeft(Node left) {
         this.left = left;
@@ -26,14 +24,10 @@ public class BinaryOperatorNode extends Node {
         this.right = right;
     }
 
-    public Node getLeft() {
-        return left;
-    }
-
+    public Node getLeft() { return left;}
     public Token getOperator() {
         return operator;
     }
-
     public Node getRight() {
         return right;
     }

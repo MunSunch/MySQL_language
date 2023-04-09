@@ -29,9 +29,64 @@ public class ParserTests {
         Stack<Node> expected = new Stack<>();
         SelectNode select = new SelectNode();
         select.addNode(new ColumnNode(new Token(Type.STAR, "*", 7)));
-        expected.add(select);
+        expected.push(select);
 
         lexer.analys("SELECT *");
+        parser = new Parser(lexer.getTokens());
+        var actual = parser.parse();
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @DisplayName("SELECT * WHERE name = 'Munir'")
+    @Test
+    public void thirdSelectTest() throws Exception {
+        Stack<Node> expected = new Stack<>();
+        SelectNode select = new SelectNode();
+        select.addNode(new ColumnNode(new Token(Type.STAR, "*", 7)));
+        expected.add(select);
+        BinaryOperatorNode binaryNode = new BinaryOperatorNode(
+                new ColumnNode(new Token(Type.COLUMN, "name", 15)),
+                new Token(Type.OPERATOR, "=", 20),
+                new StringNode(new Token(Type.STRING, "Munir", 22))
+        );
+        WhereNode where = new WhereNode(binaryNode);
+        expected.push(where);
+
+        lexer.analys("SELECT * WHERE name = 'Munir'");
+        parser = new Parser(lexer.getTokens());
+        var actual = parser.parse();
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Disabled
+    @DisplayName("SELECT * WHERE name = 'Munir' AND age>12 OR age=15")
+    @Test
+    public void fourSelectTest() throws Exception {
+        Stack<Node> expected = new Stack<>();
+        SelectNode select = new SelectNode();
+        select.addNode(new ColumnNode(new Token(Type.STAR, "*", 7)));
+        expected.add(select);
+        WhereNode where = new WhereNode();
+        BinaryOperatorNode binaryNode1 = new BinaryOperatorNode(
+                new ColumnNode(new Token(Type.COLUMN, "name", 15)),
+                new Token(Type.OPERATOR, "=", 20),
+                new StringNode(new Token(Type.STRING, "Munir", 22))
+        );
+        BinaryOperatorNode binaryNode2 = new BinaryOperatorNode(
+                new ColumnNode(new Token(Type.COLUMN, "name", 15)),
+                new Token(Type.OPERATOR, "=", 20),
+                new StringNode(new Token(Type.STRING, "Munir", 22))
+        );
+        BinaryOperatorNode binaryNode3 = new BinaryOperatorNode(
+                new ColumnNode(new Token(Type.COLUMN, "name", 15)),
+                new Token(Type.OPERATOR, "=", 20),
+                new StringNode(new Token(Type.STRING, "Munir", 22))
+        );
+        expected.push(where);
+
+        lexer.analys("SELECT * WHERE name = 'Munir' AND age>12 OR age=15");
         parser = new Parser(lexer.getTokens());
         var actual = parser.parse();
 
@@ -68,7 +123,7 @@ public class ParserTests {
         BinaryOperatorNode binary2 = new BinaryOperatorNode(
                 new ColumnNode(new Token(Type.COLUMN, "age", 31)),
                 new Token(Type.OPERATOR, "=", 34),
-                new IntegerNode(new Token(Type.INTEGER, 24, 35))
+                new LongNode(new Token(Type.LONG, 24, 35))
         );
         insert.addNode(binary1);
         insert.addNode(binary2);
@@ -95,7 +150,7 @@ public class ParserTests {
         BinaryOperatorNode binary2 = new BinaryOperatorNode(
                 new ColumnNode(new Token(Type.COLUMN, "age", 27)),
                 new Token(Type.OPERATOR, "=", 30),
-                new IntegerNode(new Token(Type.INTEGER, 11, 31))
+                new LongNode(new Token(Type.LONG, 11, 31))
         );
         update.addNode(binary1);
         update.addNode(binary2);
@@ -108,13 +163,3 @@ public class ParserTests {
         Assertions.assertEquals(expected, actual);
     }
 }
-
-
-
-
-
-
-
-
-
-
