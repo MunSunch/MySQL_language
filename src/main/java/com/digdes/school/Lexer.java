@@ -23,7 +23,9 @@ public class Lexer {
         while(position < code.length()) {
             String subString = code.substring(position);
             for (Type curType: Type.values()) {
-                if(curType == Type.KEYWORD || curType== Type.LOGICAL_OPERATOR) {
+                if(curType == Type.KEYWORD || curType== Type.LOGICAL_OPERATOR
+                        || curType == Type.OPERATOR)
+                {
                     matcher = Pattern.compile("^" + curType.getRegex())
                             .matcher(subString.toUpperCase());
                 } else {
@@ -41,7 +43,7 @@ public class Lexer {
                     continue OUTER;
                 }
             }
-            throw new Exception("Incorrect expression! Position: " + position);
+            throw new Exception("Ошибка синтаксиса! Позиция: " + position);
         }
     }
 

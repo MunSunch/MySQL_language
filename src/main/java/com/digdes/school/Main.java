@@ -9,29 +9,34 @@ public class Main
 {
     public static void main( String[] args ) throws Exception
     {
+        JavaSchoolStarter starter = new JavaSchoolStarter();
         List<Map<String, Object>> table = new ArrayList<>();
-        JavaSchoolStarter.execute(table, "INSERT VALUES id=3, lastName = 'Федоров', age=40, active=true");
-        JavaSchoolStarter.execute(table, "INSERT VALUES id=4, lastName = 'Петров', age=30, active=true");
+        starter.execute(table, "INSERT VALUES id=3, lastname = 'Федоров', age=40, active=true");
+        starter.execute(table, "INSERT VALUES id=4, lastname = 'Петров', age=30, active=true");
 
         System.out.println("\t\tSelect * :");
-        var res = JavaSchoolStarter.execute(table, "SELECT *");
+        var res = starter.execute(table, "SELECT *");
         print(res);
 
         System.out.println("\t\tSELECT * where age<=30");
-        res = JavaSchoolStarter.execute(table, "SELECT * where age<=30");
+        res = starter.execute(table, "SELECT * where age<=30");
         print(res);
 
-        System.out.println("Update values lastName='Иванов', age=33, active=false where id=4 :");
-        res = JavaSchoolStarter.execute(table, "Update values lastName='Иванов', age=33, active=false where id=4");
+        System.out.println("\t\tSELECT * where lastname ilike '%ОВ'");
+        res = starter.execute(table, "SELECT * where lastname ilike '%ОВ'");
         print(res);
 
-        System.out.println("delete");
-        res = JavaSchoolStarter.execute(table, "delete");
+        System.out.println("\t\tUpdate values lastName='Иванов', age=33, active=false where id=4 :");
+        res = starter.execute(table, "Update values lastName='Иванов', age=33, active=false where id=4");
+        print(res);
+
+        System.out.println("\t\tDelete");
+        res = starter.execute(table, "delete");
         print(res);
     }
 
     private static void print(List<Map<String, Object>> table) {
-        table.stream().forEach(x -> System.out.println("\t" + x));
+        table.stream().forEach(System.out::println);
         System.out.println();
     }
 }

@@ -13,9 +13,13 @@ public class JavaSchoolStarter {
 
     public JavaSchoolStarter() {}
 
-    public static List<Map<String, Object>> execute(List<Map<String, Object>> table,
+    public List<Map<String, Object>> execute(List<Map<String, Object>> table,
                                                      String command) throws Exception
     {
+        if(this.table == null) {
+            this.table = new ArrayList<>(table);
+        }
+
         Lexer lexer = new Lexer();
         lexer.analys(command);
         Parser parser = new Parser();

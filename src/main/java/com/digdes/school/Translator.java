@@ -174,24 +174,37 @@ public class Translator {
 
     private List<Integer> doStringOperation(String column, String operator, String value) throws Exception {
         Stream<Map<String, Object>> stream = table.stream();
-        switch (operator) {
+        switch (operator.toLowerCase()) {
             case "=":
                 stream = stream.filter((Map<String, Object> x) -> {
                             return value.equals(x.get(column));
-                        });
+                });
                 break;
             case "!=":
                 stream = stream.filter((Map<String, Object> x) -> {
                         return !value.equals(x.get(column));
-                        });
+                });
                 break;
             case "like":
+                stream = stream.filter((Map<String, Object> x) -> {
+                   return doRegular((String)x.get(column), value);
+                });
+                break;
             case "ilike":
+                stream = stream.filter((Map<String, Object> x) -> {
+                    return doRegular(((String)x.get(column)).toUpperCase(), value.toUpperCase());
+                });
+                break;
             default:
-                throw new Exception("Данная арифметическая операция не поддерживается со строками!");
+                throw new Exception("Данная операция не поддерживается со строками!");
         }
         return stream.map(x -> table.indexOf(x))
                 .collect(Collectors.toList());
+    }
+
+    private boolean doRegular(String s, String value) {
+        value = value.replace("%", "\\S");
+        return s.matches(value);
     }
 
     private void translateUpdate(Node Node, List<Map<String, Object>> result, List<Integer> indexes) {

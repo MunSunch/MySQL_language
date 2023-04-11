@@ -10,7 +10,7 @@ public enum Type {
     DOUBLE("\\d+\\.\\d+"),
     LONG("\\d+"),
     BOOLEAN("^true|^false"),
-    STRING("'[a-zA-Zа-яА-Я0-9]+'"),
+    STRING("'[a-zA-Zа-яА-Я0-9%]+'"),
     COLUMN("\\w+");
 
     private String regex;
