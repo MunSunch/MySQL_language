@@ -1,7 +1,6 @@
 package com.digdes.school;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,8 +23,13 @@ public class Lexer {
         while(position < code.length()) {
             String subString = code.substring(position);
             for (Type curType: Type.values()) {
-                matcher = Pattern.compile("^" + curType.getRegex())
-                        .matcher(subString);
+                if(curType == Type.KEYWORD || curType== Type.LOGICAL_OPERATOR) {
+                    matcher = Pattern.compile("^" + curType.getRegex())
+                            .matcher(subString.toUpperCase());
+                } else {
+                    matcher = Pattern.compile("^" + curType.getRegex())
+                            .matcher(subString);
+                }
                 if(matcher.find()) {
                     int positionNextToken = position + matcher.end();
                     if(ignoreTypes.stream().noneMatch(x -> x == curType)) {

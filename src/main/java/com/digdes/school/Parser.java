@@ -8,20 +8,21 @@ public class Parser {
     private int position;
     private Map<Type, Integer> priorityOperations;
 
-    public Parser(List<Token> tokens) {
-        this.tokens = tokens;
+    public Parser() {
         this.position = 0;
         this.priorityOperations = new HashMap<>();
         priorityOperations.put(Type.OPERATOR, 1);
         priorityOperations.put(Type.LOGICAL_OPERATOR, 2);
     }
 
-    public Stack<Node> parse() throws Exception{
+    public Stack<Node> parse(List<Token> tokens) throws Exception{
+        this.tokens = new ArrayList<>(tokens);
+
         Stack<Node> statementNodes = new Stack<>();
         Token currentToken;
         if(position < tokens.size()) {
             currentToken = require(Type.KEYWORD);
-            switch ((String)currentToken.getValue()) {
+            switch (((String)currentToken.getValue()).toUpperCase()) {
                 case "SELECT":
                     SelectNode select = parseSelect();
                     statementNodes.push(select);
@@ -39,18 +40,20 @@ public class Parser {
                     statementNodes.push(update);
                     break;
                 default:
-                    throw new Exception("Syntax Error!");
+                    throw new Exception("Ошибка синтаксиса!");
             }
             if(position == tokens.size()) {
                 return statementNodes;
             }
             currentToken = match(Type.KEYWORD);
-            if("WHERE".equals(currentToken.getValue())) {
-                position--;
+            if(currentToken == null) {
+                return statementNodes;
+            }
+            if("WHERE".equalsIgnoreCase((String) currentToken.getValue())) {
                 WhereNode where = parseWhere();
                 statementNodes.push(where);
             } else {
-                throw new Exception("Syntax Error!");
+                throw new Exception("Ошибка синтаксиса!");
             }
         }
         return statementNodes;
@@ -83,8 +86,8 @@ public class Parser {
     private UpdateNode parseUpdate() throws Exception {
         UpdateNode updateNode = new UpdateNode();
         var currentToken = require(Type.KEYWORD);
-        if(!"VALUES".equals(currentToken.getValue())) {
-            throw new Exception("Syntax Error!");
+        if(!"VALUES".equalsIgnoreCase((String) currentToken.getValue())) {
+            throw new Exception("Ошибка синтаксиса!");
         }
         while(true) {
             BinaryOperatorNode binaryOperatorNode = parseAssignOperation();
@@ -93,7 +96,7 @@ public class Parser {
                 break;
             }
         }
-        position--;
+        //position--;
         return updateNode;
     }
 
@@ -101,7 +104,7 @@ public class Parser {
         InsertNode insertNode = new InsertNode();
         var currentToken = require(Type.KEYWORD);
         if(!"VALUES".equals(currentToken.getValue())) {
-            throw new Exception("Syntax Error!");
+            throw new Exception("Ошибка синтаксиса!");
         }
         while(true)
         {
@@ -118,7 +121,7 @@ public class Parser {
     private BinaryOperatorNode parseAssignOperation() throws Exception {
         var binary = parseBinaryOperation();
         if(!"=".equals(binary.getOperator().getValue())){
-            throw new Exception("Syntax Error!");
+            throw new Exception("Ошибка синтаксиса!");
         }
         return binary;
     }
@@ -141,12 +144,8 @@ public class Parser {
 
     private WhereNode parseWhere() throws Exception {
         Stack<BinaryOperatorNode> temp = new Stack<>();
-        Token currentToken = require(Type.KEYWORD);
-        if(!"WHERE".equals(currentToken.getValue())) {
-            throw new Exception("Syntax Error!");
-        }
         while(position < tokens.size()) {
-            currentToken = require(Type.COLUMN, Type.LOGICAL_OPERATOR);
+            Token currentToken = require(Type.COLUMN, Type.LOGICAL_OPERATOR);
             BinaryOperatorNode binaryOperatorNode;
             if(currentToken.getType() == Type.COLUMN) {
                 position--;
@@ -155,7 +154,7 @@ public class Parser {
                 binaryOperatorNode = new BinaryOperatorNode();
                 binaryOperatorNode.setOperator(currentToken);
             } else {
-                throw new Exception("Syntax error!");
+                throw new Exception("Ошибка синтаксиса!");
             }
 
             if(temp.isEmpty()) {

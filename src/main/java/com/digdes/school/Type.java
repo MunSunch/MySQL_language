@@ -5,7 +5,7 @@ public enum Type {
     SPACE(" "),
     KEYWORD("^SELECT|^UPDATE|^INSERT|^DELETE|^WHERE|^VALUES"),
     STAR("\\*"),
-    OPERATOR("^=|^!=|^<|^>|^<=|^>=|^like|^ilike"),
+    OPERATOR("^=|^!=|^<=|^>=|^<|^>|^LIKE|^ILIKE"),
     LOGICAL_OPERATOR("^AND|^OR"),
     DOUBLE("\\d+\\.\\d+"),
     LONG("\\d+"),

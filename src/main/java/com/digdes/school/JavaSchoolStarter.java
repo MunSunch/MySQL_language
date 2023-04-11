@@ -18,9 +18,9 @@ public class JavaSchoolStarter {
     {
         Lexer lexer = new Lexer();
         lexer.analys(command);
-        Parser parser = new Parser(lexer.getTokens());
-        var stack = parser.parse();
-        Translator translator = new Translator(stack, table);
-        return translator.translate();
+        Parser parser = new Parser();
+        var stack = parser.parse(lexer.getTokens());
+        Translator translator = new Translator(table);
+        return translator.translate(stack);
     }
 }

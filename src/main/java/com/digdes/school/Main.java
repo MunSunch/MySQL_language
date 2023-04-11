@@ -10,12 +10,29 @@ public class Main
     public static void main( String[] args ) throws Exception
     {
         List<Map<String, Object>> table = new ArrayList<>();
-        JavaSchoolStarter.execute(table, "INSERT VALUES name='Munir', age=24");
-        JavaSchoolStarter.execute(table, "INSERT VALUES name='Andrey', age=26");
-        JavaSchoolStarter.execute(table, "INSERT VALUES name='Tolya', age=17");
-        JavaSchoolStarter.execute(table, "INSERT VALUES name='Kolya', age=16");
-        var res
-                = JavaSchoolStarter.execute(table, "SELECT name WHERE age<20 OR age=16");
-        res.stream().forEach(System.out::println);
+        JavaSchoolStarter.execute(table, "INSERT VALUES id=3, lastName = 'Федоров', age=40, active=true");
+        JavaSchoolStarter.execute(table, "INSERT VALUES id=4, lastName = 'Петров', age=30, active=true");
+
+        System.out.println("Select * :");
+        var res = JavaSchoolStarter.execute(table, "SELECT *");
+        print(res);
+
+        System.out.println("SELECT * where age<=30 :");
+        res = JavaSchoolStarter.execute(table, "SELECT * where age<=30");
+        print(res);
+
+        System.out.println("Update values lastName='Иванов', age=33, active=false where id=4 :");
+        res = JavaSchoolStarter.execute(table, "Update values lastName='Иванов', age=33, active=false where id=4");
+        print(res);
+
+        System.out.println("delete * where name='Иванов' :");
+        res = JavaSchoolStarter.execute(table, "SELECT * where age<=30");
+        print(res);
+
+    }
+
+    private static void print(List<Map<String, Object>> table) {
+        table.stream().forEach(x -> System.out.println("\t" + x));
+        System.out.println();
     }
 }
