@@ -40,7 +40,7 @@ public class Parser {
                     statementNodes.push(update);
                     break;
                 default:
-                    throw new Exception("Ошибка синтаксиса!");
+                    throw new Exception(String.format("Ошибка синтаксиса! Позиция:%d", currentToken.getPosition()));
             }
             if(position == tokens.size()) {
                 return statementNodes;
@@ -53,13 +53,13 @@ public class Parser {
                 WhereNode where = parseWhere();
                 statementNodes.push(where);
             } else {
-                throw new Exception("Ошибка синтаксиса!");
+                throw new Exception(String.format("Ошибка синтаксиса! Позиция:%d", currentToken.getPosition()));
             }
         }
         return statementNodes;
     }
 
-    private DeleteNode parseDelete() {
+    private DeleteNode parseDelete() throws Exception {
         return new DeleteNode();
     }
 
@@ -87,7 +87,7 @@ public class Parser {
         UpdateNode updateNode = new UpdateNode();
         var currentToken = require(Type.KEYWORD);
         if(!"VALUES".equalsIgnoreCase((String) currentToken.getValue())) {
-            throw new Exception("Ошибка синтаксиса!");
+            throw new Exception(String.format("Ошибка синтаксиса! Позиция:%d", currentToken.getPosition()));
         }
         while(true) {
             BinaryOperatorNode binaryOperatorNode = parseAssignOperation();
@@ -104,7 +104,7 @@ public class Parser {
         InsertNode insertNode = new InsertNode();
         var currentToken = require(Type.KEYWORD);
         if(!"VALUES".equals(currentToken.getValue())) {
-            throw new Exception("Ошибка синтаксиса!");
+            throw new Exception(String.format("Ошибка синтаксиса! Позиция:%d", currentToken.getPosition()));
         }
         while(true)
         {
@@ -121,7 +121,7 @@ public class Parser {
     private BinaryOperatorNode parseAssignOperation() throws Exception {
         var binary = parseBinaryOperation();
         if(!"=".equals(binary.getOperator().getValue())){
-            throw new Exception("Ошибка синтаксиса!");
+            throw new Exception(String.format("Ошибка синтаксиса! Позиция:%d", binary.getOperator().getPosition()));
         }
         return binary;
     }
@@ -154,7 +154,7 @@ public class Parser {
                 binaryOperatorNode = new BinaryOperatorNode();
                 binaryOperatorNode.setOperator(currentToken);
             } else {
-                throw new Exception("Ошибка синтаксиса!");
+                throw new Exception((String.format("Ошибка синтаксиса! Позиция:%d", currentToken.getPosition())));
             }
 
             if(temp.isEmpty()) {
