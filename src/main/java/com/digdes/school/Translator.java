@@ -53,7 +53,7 @@ public class Translator {
     private List<Integer> translateLogical(BinaryOperatorNode root) throws Exception {
         BinaryOperatorNode leftOperand = (BinaryOperatorNode)root.getLeft();
 
-        if("AND".equals(root.getOperator().getValue())) {
+        if("AND".equalsIgnoreCase((String) root.getOperator().getValue())) {
             var resultLeftCondition = translateCondition((BinaryOperatorNode) root.getLeft());
             var resultRightCondition = translateCondition((BinaryOperatorNode) root.getRight());
             resultLeftCondition.retainAll(resultRightCondition);
@@ -203,7 +203,7 @@ public class Translator {
     }
 
     private boolean doRegular(String s, String value) {
-        value = value.replace("%", "\\S");
+        value = value.replace("%", ".*");
         return s.matches(value);
     }
 

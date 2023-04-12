@@ -15,15 +15,15 @@ public class Main
         starter.execute(table, "INSERT VALUES id=4, lastname = 'Петров', age=30, active=true");
 
         System.out.println("\t\tSelect * :");
-        var res = starter.execute(table, "SELECT *");
+        var res = starter.execute(table, "SELECT * ");
         print(res);
 
         System.out.println("\t\tSELECT * where age<=30");
         res = starter.execute(table, "SELECT * where age<=30");
         print(res);
 
-        System.out.println("\t\tSELECT * where lastname ilike '%ОВ'");
-        res = starter.execute(table, "SELECT * where lastname ilike '%ОВ'");
+        System.out.println("\t\tSELECT * where lastname ilike '%ОВ' and lastname like 'П%'");
+        res = starter.execute(table, "SELECT * where lastname ilike '%ОВ' and lastname like 'П%'");
         print(res);
 
         System.out.println("\t\tUpdate values lastName='Иванов', age=33, active=false where id=4 :");
