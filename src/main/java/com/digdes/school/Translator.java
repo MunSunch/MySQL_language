@@ -68,6 +68,7 @@ public class Translator {
 
     private List<Integer> translateCondition(BinaryOperatorNode root) throws Exception {
         String column = (String) ((ColumnNode)root.getLeft()).getToken().getValue();
+        checkColumns(column);
         String operator = (String) root.getOperator().getValue();
 
         if(root.getRight() instanceof LongNode) {
@@ -197,7 +198,7 @@ public class Translator {
         return s.matches(value);
     }
 
-    private void translateUpdate(Node Node, List<Map<String, Object>> result, List<Integer> indexes) {
+    private void translateUpdate(Node Node, List<Map<String, Object>> result, List<Integer> indexes) throws Exception {
         UpdateNode update = (UpdateNode) Node;
         var nodes = update.getNodes();
         if(indexes == null) {
@@ -215,9 +216,10 @@ public class Translator {
         }
     }
 
-    private void translateUpdateCondition(List<Node> nodes, Map<String, Object> row) {
+    private void translateUpdateCondition(List<Node> nodes, Map<String, Object> row) throws Exception {
         for (Node node: nodes) {
             String column = (String) ((ColumnNode)((BinaryOperatorNode)node).getLeft()).getToken().getValue();
+            checkColumns(column);
             Node rightNode = ((BinaryOperatorNode)node).getRight();
             if(rightNode instanceof StringNode) {
                 String value = (String)((StringNode)rightNode).getToken().getValue();
@@ -255,7 +257,7 @@ public class Translator {
         }
     }
 
-    private void translateSelect(SelectNode select, List<Map<String, Object>> result, List<Integer> indexes) {
+    private void translateSelect(SelectNode select, List<Map<String, Object>> result, List<Integer> indexes) throws Exception {
         if(select.getNodes().size() == 1) {
             ColumnNode columnNode = (ColumnNode) select.getNodes().get(0);
             if("*".equals(columnNode.getToken().getValue())){
@@ -278,6 +280,8 @@ public class Translator {
             String value = (String) columnNode.getToken().getValue();
             columns.add(value);
         }
+        checkColumns(columns.toArray(String[]::new));
+
         if(indexes == null) {
             for (var row : table) {
                 Map<String, Object> item = new HashMap<>();
@@ -293,6 +297,16 @@ public class Translator {
                     item.put(column, table.get(indexes.get(i)).get(column));
                 }
                 result.add(item);
+            }
+        }
+    }
+
+    private void checkColumns(String ...columns) throws Exception{
+        for (var row: table) {
+            for (var column: columns) {
+                if(!row.containsKey(column)) {
+                    throw new Exception("Такой колонки в таблице не существует! Колонка: " + column);
+                }
             }
         }
     }
