@@ -17,14 +17,14 @@ public class JavaSchoolStarter {
                                                      String command) throws Exception
     {
         if(this.table == null) {
-            this.table = new ArrayList<>(table);
+            this.table = table;
         }
 
         Lexer lexer = new Lexer();
         lexer.analys(command);
         Parser parser = new Parser();
         var stack = parser.parse(lexer.getTokens());
-        Translator translator = new Translator(table);
+        Translator translator = new Translator(this.table);
         return translator.translate(stack);
     }
 }

@@ -78,7 +78,7 @@ public class Translator {
             value = value.substring(1, value.length() - 1);
             return doStringOperation(column, operator, value);
         } else if(root.getRight() instanceof DoubleNode) {
-            double value = (double) ((DoubleNode) root.getRight()).getToken().getValue();
+            double value = Double.parseDouble((String)((DoubleNode) root.getRight()).getToken().getValue());
             return doArithmeticOperationDouble(column, operator, value);
         } else {
             boolean value = Boolean.parseBoolean((String)((BooleanNode) root.getRight()).getToken().getValue());
@@ -115,41 +115,31 @@ public class Translator {
     }
 
     private List<Integer> doArithmeticOperationDouble(String column, String operator, Double value) throws Exception {
-//        Stream<Map<String, Object>> stream = table.stream();
-//        switch (operator) {
-//            case "=":
-//                return stream.filter((Map<String, Object> x) -> {
-//                            return ((double)(x.get(column)) == value);
-//                        }).map(x -> table.indexOf(x))
-//                        .collect(Collectors.toList());
-//            case "!=":
-//                return stream.filter((Map<String, Object> x) -> {
-//                            return ((double)(x.get(column)) != value);
-//                        }).map(x -> table.indexOf(x))
-//                        .collect(Collectors.toList());
-//            case ">":
-//                return stream.filter((Map<String, Object> x) -> {
-//                            return ((double)(x.get(column)) > value);
-//                        }).map(x -> table.indexOf(x))
-//                        .collect(Collectors.toList());
-//            case "<":
-//                return stream.filter((Map<String, Object> x) -> {
-//                            return ((double)(x.get(column)) < value);
-//                        }).map(x -> table.indexOf(x))
-//                        .collect(Collectors.toList());
-//            case ">=":
-//                return stream.filter((Map<String, Object> x) -> {
-//                            return ((double)(x.get(column)) >= value);
-//                        }).map(x -> table.indexOf(x))
-//                        .collect(Collectors.toList());
-//            case "<=":
-//                return stream.filter((Map<String, Object> x) -> {
-//                            return ((double)(x.get(column)) <= value);
-//                        }).map(x -> table.indexOf(x))
-//                        .collect(Collectors.toList());
-//        }
-//        throw new Exception("Данная арифметическая операция не поддерживается с числом!");
-        return null;
+        Stream<Map<String, Object>> stream = table.stream();
+        switch (operator) {
+            case "=":
+                stream = stream.filter((Map<String, Object> x) -> ((double)(x.get(column)) == value));
+                break;
+            case "!=":
+                stream = stream.filter((Map<String, Object> x) -> ((double)(x.get(column)) != value));
+                break;
+            case ">":
+                stream = stream.filter((Map<String, Object> x) -> ((double)(x.get(column)) > value));
+                break;
+            case "<":
+                stream = stream.filter((Map<String, Object> x) -> ((double)(x.get(column)) < value));
+                break;
+            case ">=":
+                stream = stream.filter((Map<String, Object> x) -> ((double)(x.get(column)) >= value));
+                break;
+            case "<=":
+                stream = stream.filter((Map<String, Object> x) -> ((double)(x.get(column)) <= value));
+                break;
+            default:
+                throw new Exception("Данная арифметическая операция не поддерживается с числом!");
+        }
+        return stream.map(x -> table.indexOf(x))
+                .collect(Collectors.toList());
     }
 
     private List<Integer> doBooleanOperation(String column, String operator, boolean value) throws Exception {
@@ -232,16 +222,16 @@ public class Translator {
             if(rightNode instanceof StringNode) {
                 String value = (String)((StringNode)rightNode).getToken().getValue();
                 value = value.substring(1, value.length()-1);
-                row.replace(column, value);
+                row.put(column, value);
             } else if(rightNode instanceof LongNode) {
                 long value = Long.parseLong((String) ((LongNode)rightNode).getToken().getValue());
-                row.replace(column, value);
+                row.put(column, value);
             } else if(rightNode instanceof DoubleNode) {
                 double value = Double.parseDouble((String) ((DoubleNode)rightNode).getToken().getValue());
-                row.replace(column, value);
+                row.put(column, value);
             } else if(rightNode instanceof BooleanNode) {
                 boolean value = Boolean.parseBoolean((String) ((BooleanNode)rightNode).getToken().getValue());
-                row.replace(column, value);
+                row.put(column, value);
             }
         }
     }
